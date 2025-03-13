@@ -13,7 +13,7 @@ import { Progress } from './collections/Progress'
 import { Enrollments } from './collections/Enrollments'
 
 export default buildConfig({
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://localhost:3000',
   secret: process.env.PAYLOAD_SECRET || 'YOUR-SECRET-KEY',
   admin: {
     user: Users.slug,
