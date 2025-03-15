@@ -6,53 +6,108 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
-    users: User;
-    media: Media;
     tenants: Tenant;
     'student-settings': StudentSetting;
+    users: User;
+    progress: Progress;
+    points: Point;
+    levels: Level;
+    achievements: Achievement;
+    badges: Badge;
+    streaks: Streak;
+    leaderboards: Leaderboard;
+    enrollments: Enrollment;
     courses: Course;
     modules: Module;
     lessons: Lesson;
-    progress: Progress;
-    enrollments: Enrollment;
-    levels: Level;
-    points: Point;
-    badges: Badge;
-    achievements: Achievement;
-    leaderboards: Leaderboard;
-    streaks: Streak;
+    media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'student-settings': StudentSettingsSelect<false> | StudentSettingsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    progress: ProgressSelect<false> | ProgressSelect<true>;
+    points: PointsSelect<false> | PointsSelect<true>;
+    levels: LevelsSelect<false> | LevelsSelect<true>;
+    achievements: AchievementsSelect<false> | AchievementsSelect<true>;
+    badges: BadgesSelect<false> | BadgesSelect<true>;
+    streaks: StreaksSelect<false> | StreaksSelect<true>;
+    leaderboards: LeaderboardsSelect<false> | LeaderboardsSelect<true>;
+    enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
     modules: ModulesSelect<false> | ModulesSelect<true>;
     lessons: LessonsSelect<false> | LessonsSelect<true>;
-    progress: ProgressSelect<false> | ProgressSelect<true>;
-    enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
-    levels: LevelsSelect<false> | LevelsSelect<true>;
-    points: PointsSelect<false> | PointsSelect<true>;
-    badges: BadgesSelect<false> | BadgesSelect<true>;
-    achievements: AchievementsSelect<false> | AchievementsSelect<true>;
-    leaderboards: LeaderboardsSelect<false> | LeaderboardsSelect<true>;
-    streaks: StreaksSelect<false> | StreaksSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   globals: {};
   globalsSelect: {};
@@ -84,53 +139,119 @@ export interface UserAuthOperations {
   };
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  role: 'admin' | 'instructor' | 'student';
-  tenant?: (number | null) | Tenant;
-  name: string;
-  avatar?: (number | null) | Media;
-  settings?: (number | null) | StudentSetting;
-  updatedAt: string;
-  createdAt: string;
-  enableAPIKey?: boolean | null;
-  apiKey?: string | null;
-  apiKeyIndex?: string | null;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
-}
-/**
+ * Organizations using the platform
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenants".
  */
 export interface Tenant {
-  id: number;
+  id: string;
+  /**
+   * The display name of the tenant
+   */
   name: string;
+  /**
+   * URL-friendly identifier for the tenant
+   */
   slug: string;
+  /**
+   * Custom domain for the tenant
+   */
+  domain?: string | null;
+  /**
+   * Current status of the tenant
+   */
+  status: 'active' | 'suspended' | 'pending';
+  /**
+   * Subscription plan level
+   */
+  plan: 'basic' | 'pro' | 'enterprise';
+  /**
+   * Subscription details
+   */
+  subscription?: {
+    /**
+     * When the subscription started
+     */
+    startDate?: string | null;
+    /**
+     * When the subscription renews
+     */
+    renewalDate?: string | null;
+    /**
+     * Stripe customer ID
+     */
+    stripeCustomerId?: string | null;
+  };
   settings?: {
     theme?: ('light' | 'dark' | 'system') | null;
-    logo?: (number | null) | Media;
+    logo?: (string | null) | Media;
+    colors?: {
+      primary?: string | null;
+      secondary?: string | null;
+    };
+  };
+  features?: {
+    /**
+     * Enable gamification features
+     */
+    gamification?: boolean | null;
+    /**
+     * Enable adaptive learning features
+     */
+    adaptiveLearning?: boolean | null;
+    /**
+     * Enable analytics tracking
+     */
+    analytics?: boolean | null;
+    /**
+     * Enable API access
+     */
+    api?: boolean | null;
+  };
+  /**
+   * Usage metrics and analytics
+   */
+  analytics?: {
+    /**
+     * Total number of users
+     */
+    totalUsers?: number | null;
+    /**
+     * Total number of courses
+     */
+    totalCourses?: number | null;
+    /**
+     * Storage space used in bytes
+     */
+    storageUsed?: number | null;
+    /**
+     * Last activity in the tenant
+     */
+    lastActivityAt?: string | null;
   };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Media files and images
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  /**
+   * The tenant this media belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Make this media available to all tenants
+   */
   isGlobal?: boolean | null;
+  /**
+   * Alternative text for the image
+   */
   alt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -163,14 +284,25 @@ export interface Media {
   };
 }
 /**
+ * Student preferences and settings
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "student-settings".
  */
 export interface StudentSetting {
-  id: number;
-  user: number | User;
+  id: string;
+  /**
+   * The user this settings belong to
+   */
+  user: string | User;
   preferences?: {
+    /**
+     * The default theme for the user
+     */
     theme?: ('light' | 'dark' | 'system') | null;
+    /**
+     * Email notifications for the user
+     */
     emailNotifications?: {
       assignments?: boolean | null;
       courseUpdates?: boolean | null;
@@ -181,16 +313,171 @@ export interface StudentSetting {
   createdAt: string;
 }
 /**
+ * Users of the platform
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  /**
+   * Full name of the user
+   */
+  name: string;
+  /**
+   * Maximum size: 4MB. Accepted formats: .jpg, .jpeg, .png, .gif
+   */
+  avatar?: (string | null) | Media;
+  /**
+   * User role determines permissions
+   */
+  role: 'admin' | 'instructor' | 'student';
+  /**
+   * Organization this user belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * User preferences and settings
+   */
+  settings?: (string | null) | StudentSetting;
+  /**
+   * Last time user was active
+   */
+  lastActive?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  /**
+   * Email address used for login
+   */
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
+}
+/**
+ * Student progress in courses
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "progress".
+ */
+export interface Progress {
+  id: string;
+  /**
+   * The student whose progress this is
+   */
+  student: string | User;
+  /**
+   * The course this progress is for
+   */
+  course: string | Course;
+  status: 'not_started' | 'in_progress' | 'completed';
+  /**
+   * Overall progress percentage in the course
+   */
+  overallProgress: number;
+  /**
+   * Total points earned in this course
+   */
+  pointsEarned: number;
+  /**
+   * Total points earned across all courses
+   */
+  totalPoints: number;
+  /**
+   * Whether this progress record is available globally
+   */
+  isGlobal?: boolean | null;
+  /**
+   * When the student started the course
+   */
+  startedAt: string;
+  /**
+   * When the student completed the course
+   */
+  completedAt?: string | null;
+  /**
+   * When the student last accessed the course
+   */
+  lastAccessed: string;
+  /**
+   * Progress in individual modules
+   */
+  moduleProgress?:
+    | {
+        module: string | Module;
+        status: 'not_started' | 'in_progress' | 'completed';
+        progress: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Quiz attempts and scores
+   */
+  quizAttempts?:
+    | {
+        /**
+         * The lesson containing the quiz
+         */
+        lesson?: (string | null) | Lesson;
+        score: number;
+        completedAt: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Discussion participation
+   */
+  discussions?:
+    | {
+        /**
+         * The lesson containing the discussion
+         */
+        lesson?: (string | null) | Lesson;
+        participatedAt: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Course content and structure
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "courses".
  */
 export interface Course {
-  id: number;
+  id: string;
+  /**
+   * The title of the course
+   */
   title: string;
+  /**
+   * URL-friendly version of the title (auto-generated if not provided)
+   */
   slug: string;
-  tenant?: (number | null) | Tenant;
+  /**
+   * The organization this course belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Make this course available to all tenants
+   */
   isGlobal?: boolean | null;
-  instructor: number | User;
+  /**
+   * The instructor responsible for this course
+   */
+  instructor: string | User;
+  /**
+   * Detailed description of the course content and objectives
+   */
   description: {
     root: {
       type: string;
@@ -206,9 +493,15 @@ export interface Course {
     };
     [k: string]: unknown;
   };
-  thumbnail: number | Media;
-  modules?: (number | Module)[] | null;
-  prerequisites?: (number | Course)[] | null;
+  /**
+   * Course thumbnail image (16:9 ratio recommended)
+   */
+  thumbnail: string | Media;
+  /**
+   * Course modules in sequential order
+   */
+  modules?: (string | Module)[] | null;
+  prerequisites?: (string | Course)[] | null;
   duration: {
     hours: number;
     minutes: number;
@@ -225,10 +518,25 @@ export interface Course {
     showProgress?: boolean | null;
   };
   enrollment?: {
+    /**
+     * Maximum number of students (0 for unlimited)
+     */
     capacity?: number | null;
+    /**
+     * Allow students to enroll themselves
+     */
     allowSelfEnrollment?: boolean | null;
+    /**
+     * Enforce prerequisite course completion
+     */
     requirePrerequisiteCompletion?: boolean | null;
+    /**
+     * When enrollment opens
+     */
     enrollmentStart?: string | null;
+    /**
+     * When enrollment closes
+     */
     enrollmentEnd?: string | null;
   };
   updatedAt: string;
@@ -236,11 +544,13 @@ export interface Course {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Course modules and sections
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "modules".
  */
 export interface Module {
-  id: number;
+  id: string;
   title: string;
   description?: {
     root: {
@@ -257,9 +567,18 @@ export interface Module {
     };
     [k: string]: unknown;
   } | null;
-  course: number | Course;
+  /**
+   * The course this module belongs to
+   */
+  course: string | Course;
+  /**
+   * Order in which this module appears in the course
+   */
   order: number;
-  lessons?: (number | Lesson)[] | null;
+  /**
+   * Lessons within this module
+   */
+  lessons?: (string | Lesson)[] | null;
   duration: {
     hours: number;
     minutes: number;
@@ -267,7 +586,13 @@ export interface Module {
   status: 'draft' | 'published' | 'archived';
   completionCriteria: {
     type: 'all_lessons' | 'min_score' | 'custom';
+    /**
+     * Minimum score required to complete this module
+     */
     minimumScore?: number | null;
+    /**
+     * Custom completion rule (evaluated at runtime)
+     */
     customRule?: string | null;
   };
   updatedAt: string;
@@ -275,15 +600,32 @@ export interface Module {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Individual lessons within modules
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "lessons".
  */
 export interface Lesson {
-  id: number;
+  id: string;
+  /**
+   * The title of the lesson
+   */
   title: string;
-  module: number | Module;
+  /**
+   * The module this lesson belongs to
+   */
+  module: string | Module;
+  /**
+   * Order in which this lesson appears in the module
+   */
   order: number;
+  /**
+   * The type of lesson content
+   */
   type: 'video' | 'reading' | 'quiz' | 'assignment' | 'discussion';
+  /**
+   * Brief overview of the lesson
+   */
   description?: {
     root: {
       type: string;
@@ -300,10 +642,22 @@ export interface Lesson {
     [k: string]: unknown;
   } | null;
   video?: {
+    /**
+     * URL of the video (YouTube, Vimeo, etc.)
+     */
     url: string;
+    /**
+     * Duration in minutes
+     */
     duration: number;
+    /**
+     * Video transcript for accessibility
+     */
     transcript?: string | null;
   };
+  /**
+   * Lesson content in rich text format
+   */
   content?: {
     root: {
       type: string;
@@ -332,6 +686,9 @@ export interface Lesson {
         | null;
       answer?: string | null;
       points: number;
+      /**
+       * Explanation of the correct answer
+       */
       explanation?: {
         root: {
           type: string;
@@ -350,8 +707,17 @@ export interface Lesson {
       id?: string | null;
     }[];
     settings: {
+      /**
+       * Time limit in minutes (0 for no limit)
+       */
       timeLimit?: number | null;
+      /**
+       * Number of attempts allowed
+       */
       attempts?: number | null;
+      /**
+       * Minimum score required to pass (%)
+       */
       passingScore: number;
       randomizeQuestions?: boolean | null;
       showCorrectAnswers?: ('never' | 'after_each' | 'after_submit' | 'after_all') | null;
@@ -409,7 +775,13 @@ export interface Lesson {
       | null;
     settings?: {
       requireResponse?: boolean | null;
+      /**
+       * Number of replies required (0 for none)
+       */
       requireReplies?: number | null;
+      /**
+       * Minimum words required per post
+       */
       minimumWords?: number | null;
       dueDate?: string | null;
     };
@@ -420,166 +792,269 @@ export interface Lesson {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Point transactions for gamification
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "progress".
+ * via the `definition` "points".
  */
-export interface Progress {
-  id: number;
-  student: number | User;
-  course: number | Course;
-  completedLessons?:
+export interface Point {
+  id: string;
+  /**
+   * Student who earned the points
+   */
+  student: string | User;
+  /**
+   * Type of activity that earned points
+   */
+  type:
+    | 'lesson_complete'
+    | 'quiz_score'
+    | 'assignment_submit'
+    | 'discussion_post'
+    | 'streak_bonus'
+    | 'achievement_unlock';
+  /**
+   * Number of points earned
+   */
+  amount: number;
+  /**
+   * Source that generated these points
+   */
+  source: {
+    type: 'lessons' | 'achievements' | 'streaks';
+    lesson?: (string | null) | Lesson;
+    achievement?: (string | null) | Achievement;
+    streak?: (string | null) | Streak;
+  };
+  /**
+   * Additional context about the points earned
+   */
+  metadata?:
     | {
-        relationTo: 'lessons';
-        value: number | Lesson;
-      }[]
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
-  quizAttempts?:
-    | {
-        lesson: {
-          relationTo: 'lessons';
-          value: number | Lesson;
-        };
-        score: number;
-        answers:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        completedAt: string;
-        id?: string | null;
-      }[]
-    | null;
-  assignments?:
-    | {
-        lesson: {
-          relationTo: 'lessons';
-          value: number | Lesson;
-        };
-        submission:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        grade?: number | null;
-        feedback?: {
-          root: {
-            type: string;
-            children: {
-              type: string;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        submittedAt: string;
-        gradedAt?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  discussions?:
-    | {
-        lesson: {
-          relationTo: 'lessons';
-          value: number | Lesson;
-        };
-        post: {
-          root: {
-            type: string;
-            children: {
-              type: string;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
-        replies?:
-          | {
-              author: number | User;
-              content: {
-                root: {
-                  type: string;
-                  children: {
-                    type: string;
-                    version: number;
-                    [k: string]: unknown;
-                  }[];
-                  direction: ('ltr' | 'rtl') | null;
-                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                  indent: number;
-                  version: number;
-                };
-                [k: string]: unknown;
-              };
-              postedAt: string;
-              id?: string | null;
-            }[]
-          | null;
-        postedAt: string;
-        id?: string | null;
-      }[]
-    | null;
-  overallProgress: number;
-  pointsEarned: number;
-  status: 'not_started' | 'in_progress' | 'completed';
-  startedAt: string;
-  lastAccessed: string;
-  completedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Achievement definitions and criteria
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enrollments".
+ * via the `definition` "achievements".
  */
-export interface Enrollment {
-  id: number;
-  student: number | User;
-  course: number | Course;
-  status: 'active' | 'completed' | 'dropped' | 'pending';
-  enrolledAt: string;
-  startedAt?: string | null;
-  completedAt?: string | null;
-  droppedAt?: string | null;
-  expiresAt?: string | null;
+export interface Achievement {
+  id: string;
+  /**
+   * Name of the achievement
+   */
+  name: string;
+  /**
+   * Tenant this achievement belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Detailed description of how to earn this achievement
+   */
+  description: string;
+  /**
+   * Type of activity tracked
+   */
+  type: 'course_progress' | 'quiz_score' | 'assignment' | 'streak' | 'discussion' | 'custom';
+  criteria: {
+    /**
+     * What to measure
+     */
+    metric: 'count' | 'score' | 'duration' | 'custom';
+    /**
+     * Target value to achieve
+     */
+    threshold: number;
+    /**
+     * Time period to measure over
+     */
+    timeframe?: ('all_time' | 'daily' | 'weekly' | 'monthly') | null;
+    /**
+     * Custom achievement criteria logic
+     */
+    customRule?: string | null;
+  };
+  /**
+   * Badge awarded for this achievement
+   */
+  badge: string | Badge;
+  /**
+   * Points awarded for this achievement
+   */
+  points: number;
+  /**
+   * Hide this achievement until unlocked
+   */
+  secret?: boolean | null;
+  /**
+   * Make this achievement available to all tenants
+   */
+  isGlobal?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Achievement badges for gamification
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "badges".
+ */
+export interface Badge {
+  id: string;
+  /**
+   * Name of the badge
+   */
+  name: string;
+  /**
+   * Detailed description of how to earn this badge
+   */
+  description: string;
+  /**
+   * Badge icon image
+   */
+  icon: string | Media;
+  /**
+   * Badge rarity level
+   */
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  /**
+   * Badge category
+   */
+  category: 'progress' | 'performance' | 'engagement' | 'special';
+  /**
+   * Tenant this badge belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Make this badge available to all tenants
+   */
+  isGlobal?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * User activity streaks and history
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streaks".
+ */
+export interface Streak {
+  id: string;
+  /**
+   * The student this streak belongs to
+   */
+  student: string | User;
+  /**
+   * Type of activity being tracked
+   */
+  type: 'login' | 'progress' | 'quiz' | 'assignment';
+  /**
+   * Current consecutive days of activity
+   */
+  currentStreak: number;
+  /**
+   * Longest streak achieved
+   */
+  longestStreak: number;
+  /**
+   * Last time this streak was updated
+   */
+  lastActivity: string;
+  /**
+   * When the next activity is required to maintain streak
+   */
+  nextRequired: string;
+  /**
+   * History of activities that contributed to this streak
+   */
+  history?:
+    | {
+        date: string;
+        /**
+         * The activity that contributed to this streak
+         */
+        activity:
+          | {
+              relationTo: 'courses';
+              value: string | Course;
+            }
+          | {
+              relationTo: 'lessons';
+              value: string | Lesson;
+            }
+          | {
+              relationTo: 'modules';
+              value: string | Module;
+            };
+        points: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Level definitions and rewards
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "levels".
  */
 export interface Level {
-  id: number;
+  id: string;
+  /**
+   * Display name for the level
+   */
   name: string;
+  /**
+   * Numeric level value (unique per tenant)
+   */
   level: number;
+  /**
+   * Detailed description of the level
+   */
   description?: string | null;
+  /**
+   * Points needed to reach this level
+   */
   pointsRequired: number;
-  tenant?: (number | null) | Tenant;
+  /**
+   * The tenant this level belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Make this level available to all tenants
+   */
   isGlobal?: boolean | null;
-  icon: number | Media;
+  /**
+   * Level icon image
+   */
+  icon: string | Media;
+  /**
+   * Rewards earned at this level
+   */
   rewards?:
     | {
         type: 'badge' | 'feature' | 'custom';
-        badge?: (number | null) | Badge;
+        /**
+         * Badge awarded at this level
+         */
+        badge?: (string | null) | Badge;
+        /**
+         * Feature unlocked at this level
+         */
         feature?: string | null;
+        /**
+         * Custom reward data
+         */
         customData?:
           | {
               [k: string]: unknown;
@@ -596,131 +1071,93 @@ export interface Level {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "badges".
- */
-export interface Badge {
-  id: number;
-  name: string;
-  description: string;
-  icon: number | Media;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  category: 'progress' | 'performance' | 'engagement' | 'special';
-  tenant?: (number | null) | Tenant;
-  isGlobal?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "points".
- */
-export interface Point {
-  id: number;
-  student: number | User;
-  type:
-    | 'lesson_complete'
-    | 'quiz_score'
-    | 'assignment_submit'
-    | 'discussion_post'
-    | 'streak_bonus'
-    | 'achievement_unlock';
-  amount: number;
-  source: {
-    type: 'lessons' | 'achievements' | 'streaks';
-    lesson?: (number | null) | Lesson;
-    achievement?: (number | null) | Achievement;
-    streak?: (number | null) | Streak;
-  };
-  metadata?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements".
- */
-export interface Achievement {
-  id: number;
-  name: string;
-  description: string;
-  type: 'course_progress' | 'quiz_score' | 'assignment' | 'streak' | 'discussion' | 'custom';
-  criteria: {
-    metric: 'count' | 'score' | 'duration' | 'custom';
-    threshold: number;
-    timeframe?: ('all_time' | 'daily' | 'weekly' | 'monthly') | null;
-    customRule?: string | null;
-  };
-  badge: number | Badge;
-  points: number;
-  secret?: boolean | null;
-  tenant?: (number | null) | Tenant;
-  isGlobal?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "streaks".
- */
-export interface Streak {
-  id: number;
-  student: number | User;
-  type: 'login' | 'progress' | 'quiz' | 'assignment';
-  currentStreak: number;
-  longestStreak: number;
-  lastActivity: string;
-  nextRequired: string;
-  history?:
-    | {
-        date: string;
-        activity:
-          | {
-              relationTo: 'courses';
-              value: number | Course;
-            }
-          | {
-              relationTo: 'lessons';
-              value: number | Lesson;
-            }
-          | {
-              relationTo: 'modules';
-              value: number | Module;
-            };
-        points: number;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
+ * Leaderboard configurations
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leaderboards".
  */
 export interface Leaderboard {
-  id: number;
+  id: string;
+  /**
+   * Display name for the leaderboard
+   */
   name: string;
-  tenant?: (number | null) | Tenant;
+  /**
+   * Tenant this leaderboard belongs to
+   */
+  tenant?: (string | null) | Tenant;
+  /**
+   * Make this leaderboard available to all tenants
+   */
   isGlobal?: boolean | null;
+  /**
+   * What to rank users by
+   */
   type: 'points' | 'progress' | 'achievements' | 'custom';
+  /**
+   * Time period to rank over
+   */
   timeframe: 'all_time' | 'daily' | 'weekly' | 'monthly';
   scope?: {
-    course?: (number | null) | Course;
+    /**
+     * Limit to specific course
+     */
+    course?: (string | null) | Course;
     pointType?: ('all' | 'lesson' | 'quiz' | 'assignment') | null;
     achievementType?: ('all' | 'course' | 'quiz' | 'streak') | null;
   };
+  /**
+   * Custom ranking logic
+   */
   customLogic?: string | null;
+  /**
+   * Number of top ranks to display
+   */
   displayLimit: number;
+  /**
+   * How often to refresh rankings (in seconds)
+   */
   refreshInterval: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Student course enrollments
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments".
+ */
+export interface Enrollment {
+  id: string;
+  /**
+   * The enrolled student
+   */
+  student: string | User;
+  /**
+   * The course being enrolled in
+   */
+  course: string | Course;
+  status: 'active' | 'completed' | 'dropped' | 'pending';
+  /**
+   * When the enrollment was created
+   */
+  enrolledAt: string;
+  /**
+   * When the student started the course
+   */
+  startedAt?: string | null;
+  /**
+   * When the student completed the course
+   */
+  completedAt?: string | null;
+  /**
+   * When the student dropped the course
+   */
+  droppedAt?: string | null;
+  /**
+   * When the enrollment expires
+   */
+  expiresAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -729,72 +1166,72 @@ export interface Leaderboard {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
         relationTo: 'tenants';
-        value: number | Tenant;
+        value: string | Tenant;
       } | null)
     | ({
         relationTo: 'student-settings';
-        value: number | StudentSetting;
+        value: string | StudentSetting;
       } | null)
     | ({
-        relationTo: 'courses';
-        value: number | Course;
-      } | null)
-    | ({
-        relationTo: 'modules';
-        value: number | Module;
-      } | null)
-    | ({
-        relationTo: 'lessons';
-        value: number | Lesson;
+        relationTo: 'users';
+        value: string | User;
       } | null)
     | ({
         relationTo: 'progress';
-        value: number | Progress;
-      } | null)
-    | ({
-        relationTo: 'enrollments';
-        value: number | Enrollment;
-      } | null)
-    | ({
-        relationTo: 'levels';
-        value: number | Level;
+        value: string | Progress;
       } | null)
     | ({
         relationTo: 'points';
-        value: number | Point;
+        value: string | Point;
       } | null)
     | ({
-        relationTo: 'badges';
-        value: number | Badge;
+        relationTo: 'levels';
+        value: string | Level;
       } | null)
     | ({
         relationTo: 'achievements';
-        value: number | Achievement;
+        value: string | Achievement;
       } | null)
     | ({
-        relationTo: 'leaderboards';
-        value: number | Leaderboard;
+        relationTo: 'badges';
+        value: string | Badge;
       } | null)
     | ({
         relationTo: 'streaks';
-        value: number | Streak;
+        value: string | Streak;
+      } | null)
+    | ({
+        relationTo: 'leaderboards';
+        value: string | Leaderboard;
+      } | null)
+    | ({
+        relationTo: 'enrollments';
+        value: string | Enrollment;
+      } | null)
+    | ({
+        relationTo: 'courses';
+        value: string | Course;
+      } | null)
+    | ({
+        relationTo: 'modules';
+        value: string | Module;
+      } | null)
+    | ({
+        relationTo: 'lessons';
+        value: string | Lesson;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -804,10 +1241,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -827,78 +1264,11 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
-export interface UsersSelect<T extends boolean = true> {
-  role?: T;
-  tenant?: T;
-  name?: T;
-  avatar?: T;
-  settings?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  enableAPIKey?: T;
-  apiKey?: T;
-  apiKeyIndex?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  tenant?: T;
-  isGlobal?: T;
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -907,11 +1277,43 @@ export interface MediaSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  domain?: T;
+  status?: T;
+  plan?: T;
+  subscription?:
+    | T
+    | {
+        startDate?: T;
+        renewalDate?: T;
+        stripeCustomerId?: T;
+      };
   settings?:
     | T
     | {
         theme?: T;
         logo?: T;
+        colors?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+            };
+      };
+  features?:
+    | T
+    | {
+        gamification?: T;
+        adaptiveLearning?: T;
+        analytics?: T;
+        api?: T;
+      };
+  analytics?:
+    | T
+    | {
+        totalUsers?: T;
+        totalCourses?: T;
+        storageUsed?: T;
+        lastActivityAt?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -934,6 +1336,215 @@ export interface StudentSettingsSelect<T extends boolean = true> {
               achievements?: T;
             };
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  avatar?: T;
+  role?: T;
+  tenant?: T;
+  settings?: T;
+  lastActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "progress_select".
+ */
+export interface ProgressSelect<T extends boolean = true> {
+  student?: T;
+  course?: T;
+  status?: T;
+  overallProgress?: T;
+  pointsEarned?: T;
+  totalPoints?: T;
+  isGlobal?: T;
+  startedAt?: T;
+  completedAt?: T;
+  lastAccessed?: T;
+  moduleProgress?:
+    | T
+    | {
+        module?: T;
+        status?: T;
+        progress?: T;
+        id?: T;
+      };
+  quizAttempts?:
+    | T
+    | {
+        lesson?: T;
+        score?: T;
+        completedAt?: T;
+        id?: T;
+      };
+  discussions?:
+    | T
+    | {
+        lesson?: T;
+        participatedAt?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "points_select".
+ */
+export interface PointsSelect<T extends boolean = true> {
+  student?: T;
+  type?: T;
+  amount?: T;
+  source?:
+    | T
+    | {
+        type?: T;
+        lesson?: T;
+        achievement?: T;
+        streak?: T;
+      };
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "levels_select".
+ */
+export interface LevelsSelect<T extends boolean = true> {
+  name?: T;
+  level?: T;
+  description?: T;
+  pointsRequired?: T;
+  tenant?: T;
+  isGlobal?: T;
+  icon?: T;
+  rewards?:
+    | T
+    | {
+        type?: T;
+        badge?: T;
+        feature?: T;
+        customData?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "achievements_select".
+ */
+export interface AchievementsSelect<T extends boolean = true> {
+  name?: T;
+  tenant?: T;
+  description?: T;
+  type?: T;
+  criteria?:
+    | T
+    | {
+        metric?: T;
+        threshold?: T;
+        timeframe?: T;
+        customRule?: T;
+      };
+  badge?: T;
+  points?: T;
+  secret?: T;
+  isGlobal?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "badges_select".
+ */
+export interface BadgesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  icon?: T;
+  rarity?: T;
+  category?: T;
+  tenant?: T;
+  isGlobal?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streaks_select".
+ */
+export interface StreaksSelect<T extends boolean = true> {
+  student?: T;
+  type?: T;
+  currentStreak?: T;
+  longestStreak?: T;
+  lastActivity?: T;
+  nextRequired?: T;
+  history?:
+    | T
+    | {
+        date?: T;
+        activity?: T;
+        points?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leaderboards_select".
+ */
+export interface LeaderboardsSelect<T extends boolean = true> {
+  name?: T;
+  tenant?: T;
+  isGlobal?: T;
+  type?: T;
+  timeframe?: T;
+  scope?:
+    | T
+    | {
+        course?: T;
+        pointType?: T;
+        achievementType?: T;
+      };
+  customLogic?: T;
+  displayLimit?: T;
+  refreshInterval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments_select".
+ */
+export interface EnrollmentsSelect<T extends boolean = true> {
+  student?: T;
+  course?: T;
+  status?: T;
+  enrolledAt?: T;
+  startedAt?: T;
+  completedAt?: T;
+  droppedAt?: T;
+  expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1103,200 +1714,47 @@ export interface LessonsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "progress_select".
+ * via the `definition` "media_select".
  */
-export interface ProgressSelect<T extends boolean = true> {
-  student?: T;
-  course?: T;
-  completedLessons?: T;
-  quizAttempts?:
+export interface MediaSelect<T extends boolean = true> {
+  tenant?: T;
+  isGlobal?: T;
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
     | T
     | {
-        lesson?: T;
-        score?: T;
-        answers?: T;
-        completedAt?: T;
-        id?: T;
-      };
-  assignments?:
-    | T
-    | {
-        lesson?: T;
-        submission?: T;
-        grade?: T;
-        feedback?: T;
-        submittedAt?: T;
-        gradedAt?: T;
-        id?: T;
-      };
-  discussions?:
-    | T
-    | {
-        lesson?: T;
-        post?: T;
-        replies?:
+        thumbnail?:
           | T
           | {
-              author?: T;
-              content?: T;
-              postedAt?: T;
-              id?: T;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
             };
-        postedAt?: T;
-        id?: T;
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
       };
-  overallProgress?: T;
-  pointsEarned?: T;
-  status?: T;
-  startedAt?: T;
-  lastAccessed?: T;
-  completedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enrollments_select".
- */
-export interface EnrollmentsSelect<T extends boolean = true> {
-  student?: T;
-  course?: T;
-  status?: T;
-  enrolledAt?: T;
-  startedAt?: T;
-  completedAt?: T;
-  droppedAt?: T;
-  expiresAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "levels_select".
- */
-export interface LevelsSelect<T extends boolean = true> {
-  name?: T;
-  level?: T;
-  description?: T;
-  pointsRequired?: T;
-  tenant?: T;
-  isGlobal?: T;
-  icon?: T;
-  rewards?:
-    | T
-    | {
-        type?: T;
-        badge?: T;
-        feature?: T;
-        customData?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "points_select".
- */
-export interface PointsSelect<T extends boolean = true> {
-  student?: T;
-  type?: T;
-  amount?: T;
-  source?:
-    | T
-    | {
-        type?: T;
-        lesson?: T;
-        achievement?: T;
-        streak?: T;
-      };
-  metadata?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "badges_select".
- */
-export interface BadgesSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  icon?: T;
-  rarity?: T;
-  category?: T;
-  tenant?: T;
-  isGlobal?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements_select".
- */
-export interface AchievementsSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  type?: T;
-  criteria?:
-    | T
-    | {
-        metric?: T;
-        threshold?: T;
-        timeframe?: T;
-        customRule?: T;
-      };
-  badge?: T;
-  points?: T;
-  secret?: T;
-  tenant?: T;
-  isGlobal?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "leaderboards_select".
- */
-export interface LeaderboardsSelect<T extends boolean = true> {
-  name?: T;
-  tenant?: T;
-  isGlobal?: T;
-  type?: T;
-  timeframe?: T;
-  scope?:
-    | T
-    | {
-        course?: T;
-        pointType?: T;
-        achievementType?: T;
-      };
-  customLogic?: T;
-  displayLimit?: T;
-  refreshInterval?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "streaks_select".
- */
-export interface StreaksSelect<T extends boolean = true> {
-  student?: T;
-  type?: T;
-  currentStreak?: T;
-  longestStreak?: T;
-  lastActivity?: T;
-  nextRequired?: T;
-  history?:
-    | T
-    | {
-        date?: T;
-        activity?: T;
-        points?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

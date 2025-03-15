@@ -1,5 +1,5 @@
 import { buildConfig } from 'payload'
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Tenants } from './collections/Tenants'
@@ -19,7 +19,7 @@ import { Leaderboards } from './collections/Leaderboards'
 import { Streaks } from './collections/Streaks'
 
 export default buildConfig({
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://localhost:3000',
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET || 'YOUR-SECRET-KEY',
   admin: {
     user: Users.slug,
@@ -36,27 +36,24 @@ export default buildConfig({
   },
   editor: editorConfig,
   collections: [
-    Users,
-    Media,
     Tenants,
     StudentSettings,
+    Users,
+    Progress,
+    Points,
+    Levels,
+    Achievements,
+    Badges,
+    Streaks,
+    Leaderboards,
+    Enrollments,
     Courses,
     Modules,
     Lessons,
-    Progress,
-    Enrollments,
-    Levels,
-    Points,
-    Badges,
-    Achievements,
-    Leaderboards,
-    Streaks
+    Media,
   ],
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL,
-      max: 10,
-    }
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URI,
   }),
   typescript: {
     outputFile: 'src/payload-types.ts',
@@ -67,7 +64,7 @@ export default buildConfig({
   upload: {
     limits: {
       fileSize: 5000000, // 5MB
-    }
+    },
   },
   csrf: [process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'],
   cors: [process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'],
