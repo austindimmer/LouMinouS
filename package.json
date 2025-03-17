@@ -8,15 +8,14 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "dev": "node server.js",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "generate:graphql": "cross-env NODE_OPTIONS=--no-deprecation payload-graphql generate:schema",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/lib/db/migrate.ts",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "seed:mongo": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' tsx scripts/seedMongo.ts",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
@@ -51,6 +50,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@payloadcms/graphql": "^3.28.1",
     "@types/node": "^22.13.10",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
